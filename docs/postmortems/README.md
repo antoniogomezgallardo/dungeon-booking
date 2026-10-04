@@ -30,6 +30,6 @@ Template:
 ## Prevention (test added, alert, process change)
 ```
 
-| Date         | Title | Severity |
-| ------------ | ----- | -------- |
-| _(none yet)_ |       |          |
+| Date       | Title                                                                                                          | Severity |
+| ---------- | -------------------------------------------------------------------------------------------------------------- | -------- |
+| 2026-10-04 | [Staging deployment failed: API container never became healthy](2026-10-04-staging-api-container-unhealthy.md) | S2       |

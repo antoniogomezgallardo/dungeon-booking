@@ -79,8 +79,11 @@ pnpm workspaces · `apps/api` Fastify 5 + Prisma + PostgreSQL + zod + OpenAPI ·
 Vite · `packages/shared` zod schemas/types · `tests/e2e` Playwright (QAE-owned) · Vitest ·
 ESLint + Prettier · Docker Compose (`dev`, `staging`, `production`) · GitHub Actions.
 
-Common commands: `pnpm install`, `pnpm dev` (api + web), `pnpm -r lint`, `pnpm -r typecheck`,
-`pnpm -r test`, `pnpm --filter e2e test`, `docker compose up -d`. See `README.md`.
+Common commands: `pnpm install`, `pnpm db:up`, `pnpm db:deploy`, `pnpm dev` (api + web),
+`pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:integration`, `pnpm test:e2e`,
+`pnpm test:smoke`. See `README.md` and `docs/runbooks/local-development.md`.
+
+Every Bash call on this machine must source nvm first: `export NVM_DIR="$HOME/.nvm"; . "$NVM_DIR/nvm.sh"`.
 
 ## Living documentation (`docs/`)
 

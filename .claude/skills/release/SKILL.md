@@ -17,12 +17,13 @@ of truth and keep it updated if a step changes.
    release, what is the risk, what is the rollback plan?
 2. **Promote to staging.** Antonio opens the PR `main → staging`
    (`gh pr create --base staging --head main --title "release: sprint N to staging"`), with a body
-   listing included PRs (`git log staging..main --oneline`). CI runs the deploy-staging workflow;
-   locally he brings up the staging environment: `docker compose -f docker-compose.staging.yml
-up -d --build` and runs migrations.
-3. **Smoke on staging.** `pnpm --filter e2e test --grep @smoke` against the staging URL
-   (`BASE_URL`/`API_URL` env). If smoke fails: stop, open a bug, do not proceed. Ask Antonio to
-   justify the smoke set: is it the minimum that proves the release is alive?
+   listing included PRs (`git log staging..main --oneline`). Merging runs the deploy-staging
+   workflow (stack built and smoke-tested on the runner). Locally he reproduces the environment
+   with `docker compose -f docker-compose.staging.yml up -d --build --wait` (migrations run on
+   container start).
+3. **Smoke on staging.** `E2E_NO_SERVER=1 API_URL=http://localhost:3100 WEB_URL=http://localhost:8100 pnpm test:smoke`.
+   If smoke fails: stop, open a bug, do not proceed. Ask Antonio to justify the smoke set: is it
+   the minimum that proves the release is alive?
 4. **Regression + exploratory on staging.** Full E2E/API suite against staging plus a short
    time-boxed exploratory session on the riskiest story (Antonio writes a 5-line charter and
    notes in `docs/testing/exploratory/sprint-NN.md`).

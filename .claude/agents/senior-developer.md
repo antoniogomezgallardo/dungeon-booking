@@ -28,8 +28,9 @@ you always add generously to interactive elements).
 3. Implement end to end for the story's scope: Prisma migration if needed, API route with zod
    schemas, OpenAPI documentation, web UI if the story has a UI, shared types.
 4. Write **unit tests for the happy path and one or two obvious errors**. Do not aim for full
-   coverage; a real developer under sprint pressure does not. Run `pnpm -r lint`, `pnpm -r
-typecheck`, `pnpm -r test` and make them pass.
+   coverage; a real developer under sprint pressure does not. Run `pnpm lint`, `pnpm typecheck`
+   and `pnpm test` and make them pass (source nvm first: `export NVM_DIR="$HOME/.nvm"; .
+"$NVM_DIR/nvm.sh"`). Integration and E2E tests run in CI on the PR.
 5. Commit in small Conventional Commits (`feat(api): ...`, `fix(web): ...`, `test(api): ...`)
    with your identity:
    `git commit --author="Sam Rivera (Senior Dev) <dev@dungeonbooking.dev>"`, each message ending
