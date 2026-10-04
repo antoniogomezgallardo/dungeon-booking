@@ -54,13 +54,13 @@ later in the journey; the first five sprints keep it mandatory to reduce scope).
 
 ## How we measure success
 
-| Metric                                                                        | Target at the end of Sprint 5                     |
-| ----------------------------------------------------------------------------- | ------------------------------------------------- |
-| Double bookings (two confirmed bookings exceeding a slot's capacity)          | 0, enforced by the system and proven by tests     |
-| Time from a customer landing on a venue page to a confirmed booking           | Under 2 minutes in a usability walkthrough        |
-| Time for an owner to create a venue with 3 rooms and a week of time slots     | Under 15 minutes without reading documentation    |
-| Bookings that receive a reminder before the slot starts                       | 100 % of confirmed bookings (mock outbox)         |
-| Occupancy question answered from the dashboard without manual work            | "Occupancy per room per week" available in one view |
+| Metric                                                                    | Target at the end of Sprint 5                       |
+| ------------------------------------------------------------------------- | --------------------------------------------------- |
+| Double bookings (two confirmed bookings exceeding a slot's capacity)      | 0, enforced by the system and proven by tests       |
+| Time from a customer landing on a venue page to a confirmed booking       | Under 2 minutes in a usability walkthrough          |
+| Time for an owner to create a venue with 3 rooms and a week of time slots | Under 15 minutes without reading documentation      |
+| Bookings that receive a reminder before the slot starts                   | 100 % of confirmed bookings (mock outbox)           |
+| Occupancy question answered from the dashboard without manual work        | "Occupancy per room per week" available in one view |
 
 These metrics are what we optimise for when we trade scope against time. If a story does not
 move one of them, it is a candidate to be cut.
