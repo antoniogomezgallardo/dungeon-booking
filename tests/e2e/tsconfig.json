@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": ["node"],
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@dungeon/shared": ["../../packages/shared/src/index.ts"]
+    }
+  },
+  "include": ["tests", "fixtures", "playwright.config.ts"]
+}

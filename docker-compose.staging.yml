@@ -1,0 +1,50 @@
+# Staging environment (GitLab Flow `staging` branch). Everything runs in containers.
+# Ports: web 8100, api 3100. Database is not exposed to the host.
+name: dungeon-staging
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: dungeon
+      POSTGRES_PASSWORD: dungeon
+      POSTGRES_DB: dungeon_staging
+    volumes:
+      - db-staging-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U dungeon -d dungeon_staging']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      NODE_ENV: production
+      APP_ENV: staging
+      PORT: 3000
+      DATABASE_URL: postgresql://dungeon:dungeon@db:5432/dungeon_staging
+    ports:
+      - '3100:3000'
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:3000/health']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - '8100:80'
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  db-staging-data:

@@ -1,0 +1,21 @@
+# Local development: only the database runs in Docker; api and web run with `pnpm dev`.
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: dungeon-db-dev
+    environment:
+      POSTGRES_USER: dungeon
+      POSTGRES_PASSWORD: dungeon
+      POSTGRES_DB: dungeon_dev
+    ports:
+      - '5432:5432'
+    volumes:
+      - db-dev-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U dungeon -d dungeon_dev']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  db-dev-data:

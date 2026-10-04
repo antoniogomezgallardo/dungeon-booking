@@ -1,0 +1,50 @@
+# Production environment (GitLab Flow `production` branch). Everything runs in containers.
+# Ports: web 8200, api 3200. Database is not exposed to the host.
+name: dungeon-production
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: dungeon
+      POSTGRES_PASSWORD: dungeon
+      POSTGRES_DB: dungeon_production
+    volumes:
+      - db-production-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U dungeon -d dungeon_production']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      NODE_ENV: production
+      APP_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://dungeon:dungeon@db:5432/dungeon_production
+    ports:
+      - '3200:3000'
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:3000/health']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - '8200:80'
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  db-production-data:

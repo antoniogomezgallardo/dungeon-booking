@@ -1,0 +1,50 @@
+// Prisma schema for Dungeon Booking.
+// Each sprint adds models here through migrations (`pnpm --filter api db:migrate:dev --name <change>`).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  OWNER
+  STAFF
+  CUSTOMER
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  role         UserRole @default(CUSTOMER)
+  createdAt    DateTime @default(now())
+  venues       Venue[]
+}
+
+model Venue {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  /// IANA time zone the venue operates in (e.g. "Europe/Madrid").
+  timezone  String
+  ownerId   String
+  owner     User     @relation(fields: [ownerId], references: [id])
+  rooms     Room[]
+  createdAt DateTime @default(now())
+}
+
+model Room {
+  id              String   @id @default(uuid())
+  venueId         String
+  venue           Venue    @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  name            String
+  capacity        Int
+  durationMinutes Int
+  createdAt       DateTime @default(now())
+
+  @@unique([venueId, name])
+}
