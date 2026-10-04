@@ -14,8 +14,15 @@ export const healthRoutes: FastifyPluginAsyncZod = async (app) => {
         },
       },
     },
-    async (_request, reply) => {
-      const databaseUp = await app.deps.db.ping();
+    async (request, reply) => {
+      let databaseUp = true;
+      try {
+        await app.deps.db.ping();
+      } catch (err) {
+        databaseUp = false;
+        // A 503 without a logged cause is undiagnosable from outside the container.
+        request.log.warn({ err }, 'health check: database ping failed');
+      }
       const body = {
         status: databaseUp ? ('ok' as const) : ('degraded' as const),
         version: app.deps.version,
