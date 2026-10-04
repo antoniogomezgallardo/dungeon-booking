@@ -1,0 +1,55 @@
+name: Deploy production
+
+# GitLab Flow: a merge into `production` deploys production.
+# The `production` GitHub Environment requires a manual approval (the QAE's release sign-off).
+on:
+  push:
+    branches: [production]
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build, start and smoke-test production
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: http://localhost:8200
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+
+      - name: Build and start the production stack
+        run: docker compose -f docker-compose.production.yml up -d --build --wait
+
+      - name: Install Playwright browsers
+        run: pnpm --filter e2e exec playwright install --with-deps chromium
+
+      - name: Smoke tests against production
+        run: pnpm test:smoke
+        env:
+          CI: true
+          E2E_NO_SERVER: '1'
+          API_URL: http://localhost:3200
+          WEB_URL: http://localhost:8200
+
+      - name: Collect container logs
+        if: ${{ !cancelled() }}
+        run: docker compose -f docker-compose.production.yml logs --no-color > production-logs.txt
+
+      - name: Upload smoke report and logs
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-smoke
+          path: |
+            tests/e2e/playwright-report
+            production-logs.txt
+          retention-days: 30
+
+      - name: Tear down
+        if: ${{ always() }}
+        run: docker compose -f docker-compose.production.yml down -v

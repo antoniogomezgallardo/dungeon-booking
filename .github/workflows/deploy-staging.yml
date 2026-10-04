@@ -1,0 +1,55 @@
+name: Deploy staging
+
+# GitLab Flow: a merge into `staging` deploys the staging environment.
+# The "deployment" is simulated on the runner: build the images, start the stack, run smoke tests.
+on:
+  push:
+    branches: [staging]
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build, start and smoke-test staging
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: http://localhost:8100
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+
+      - name: Build and start the staging stack
+        run: docker compose -f docker-compose.staging.yml up -d --build --wait
+
+      - name: Install Playwright browsers
+        run: pnpm --filter e2e exec playwright install --with-deps chromium
+
+      - name: Smoke tests against staging
+        run: pnpm test:smoke
+        env:
+          CI: true
+          E2E_NO_SERVER: '1'
+          API_URL: http://localhost:3100
+          WEB_URL: http://localhost:8100
+
+      - name: Collect container logs
+        if: ${{ !cancelled() }}
+        run: docker compose -f docker-compose.staging.yml logs --no-color > staging-logs.txt
+
+      - name: Upload smoke report and logs
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-smoke
+          path: |
+            tests/e2e/playwright-report
+            staging-logs.txt
+          retention-days: 14
+
+      - name: Tear down
+        if: ${{ always() }}
+        run: docker compose -f docker-compose.staging.yml down -v
