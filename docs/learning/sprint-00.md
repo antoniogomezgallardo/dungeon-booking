@@ -25,6 +25,15 @@ The QAE joined at the end to review the foundations and prepare Sprint 1.
 - Smoke tests are selected by the `@smoke` tag, not by folder, so any test can be promoted to
   smoke without moving it.
 
+## What broke
+
+The first deployment to staging failed: the API container applied its migrations and started
+listening, yet never became healthy. CI had been green. The investigation, the wrong hypotheses
+and the two compounding causes (missing OpenSSL on Alpine for the Prisma client, and a health
+endpoint that answered 503 without logging why) are in the
+[postmortem](../postmortems/2026-10-04-staging-api-container-unhealthy.md). It is the worked
+example of the format the QAE will use from Sprint 1.
+
 ## For the QAE: first tasks
 
 1. Read ADR 0003 and the four example tests; run every level locally.
