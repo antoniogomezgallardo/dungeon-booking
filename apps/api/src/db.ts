@@ -9,12 +9,8 @@ export function createPrismaClient(): PrismaClient {
 export function prismaDatabase(prisma: PrismaClient): Database {
   return {
     async ping() {
-      try {
-        await prisma.$queryRaw`SELECT 1`;
-        return true;
-      } catch {
-        return false;
-      }
+      // Let the error propagate: the caller decides how to report it (and logs the cause).
+      await prisma.$queryRaw`SELECT 1`;
     },
   };
 }

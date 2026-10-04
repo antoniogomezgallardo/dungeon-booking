@@ -11,8 +11,8 @@ import { healthRoutes } from './routes/health.js';
 
 /** The database port the app depends on. Kept tiny so tests can fake it. */
 export interface Database {
-  /** Resolves true when the database answers a trivial query. */
-  ping(): Promise<boolean>;
+  /** Resolves when the database answers a trivial query; rejects with the underlying error otherwise. */
+  ping(): Promise<void>;
 }
 
 export interface AppDeps {

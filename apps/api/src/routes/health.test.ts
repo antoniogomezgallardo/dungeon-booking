@@ -4,7 +4,11 @@ import { buildApp } from '../app.js';
 
 function appWithDatabase(up: boolean) {
   return buildApp({
-    db: { ping: async () => up },
+    db: {
+      ping: async () => {
+        if (!up) throw new Error('connection refused');
+      },
+    },
     version: 'test',
     environment: 'test',
   });
